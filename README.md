@@ -6,7 +6,7 @@ This is an example project that demonstrates the usage of Express, TypeScript, a
 
 Make sure you have the following installed on your system:
 
-- Node.js (v12 or above)
+- Node.js (v14 or above)
 - npm (Node Package Manager)
 
 ## Getting Started
@@ -42,16 +42,31 @@ Create a .env file in the project root and provide the necessary configuration v
    ```shell
    npm start
 
-# API Routes
+## API Routes
 The server exposes the following routes:
 
-* POST /api/register - Create a new user.
-* POST /api/login - Signs user in.
-* GET /api/me - Get my user personal user details.
-* GET /api/bymail - Get user details by email.
-* GET /api/byaccount - Get user details by accountNumber.
-* GET /api/mywallet - Get my wallet details.
+* POST  /api/register - Create a new user.
+* POST  /api/login - Signs user in.
+* GET  /api/me - Get my user personal user details.
+* GET  /api/bymail - Get user details by email.
+* GET  /api/byaccount - Get user details by accountNumber.
+* GET  /api/mywallet - Get my wallet details.
 * POST /api/transfer - Perform a wallet-to-wallet transfer in-app.
 * POST /api/fund - Fund a wallet via Paystack.
 * GET /api/verifyfunds - Verify payment initiated by Paystack and update wallet balance.
    
+##Models
+User
+The User model represents a user and has the following properties:
+
+* firstName (string) - The user's first name.
+* lastName (string) - The user's last name.
+* email (string) - The user's email address.
+* password (string) - The user's password.
+* accountNumber (number) - The user's account number.
+
+Wallet
+The Wallet model represents a wallet and has the following properties:
+
+* balance (number) - The wallet balance.
+* user (reference to User model) - - The user associated with the wallet.

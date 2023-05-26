@@ -1,6 +1,7 @@
 import express from "express";
 import cors from 'cors';
 import helmet from 'helmet';
+/// <reference path="../index.d.ts" />
 import xss from 'xss-clean';
 import mongoSanitize from "express-mongo-sanitize"
 import dotenv from 'dotenv';

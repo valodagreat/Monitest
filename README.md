@@ -45,15 +45,16 @@ Create a .env file in the project root and provide the necessary configuration v
 ## API Routes
 The server exposes the following routes:
 
-* POST  /api/register - Create a new user.
-* POST  /api/login - Signs user in.
-* GET  /api/me - Get my user personal user details.
-* GET  /api/bymail - Get user details by email.
-* GET  /api/byaccount - Get user details by accountNumber.
-* GET  /api/mywallet - Get my wallet details.
-* POST /api/transfer - Perform a wallet-to-wallet transfer in-app.
-* POST /api/fund - Fund a wallet via Paystack.
-* GET /api/verifyfunds - Verify payment initiated by Paystack and update wallet balance.
+* POST  /api/user/register - Create a new user.
+* POST  /api/user/login - Signs user in.
+* GET  /api/user/me - Get my user personal user details.
+* GET  /api/user/bymail - Get user details by email.
+* GET  /api/user/byaccount - Get user details by accountNumber.
+* GET  /api/wallet/mywallet - Get my wallet details.
+* POST /api/wallet/transfer - Perform a wallet-to-wallet transfer in-app.
+* POST /api/wallet/fund - Fund a wallet via Paystack.
+* GET /api/wallet/verifyfunds - Verify payment initiated by Paystack and update wallet balance.
+* GET /api/ttransactions//mytransactions - Get all my transactions.
    
 ## Models
 User

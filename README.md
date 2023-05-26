@@ -71,3 +71,12 @@ The Wallet model represents a wallet and has the following properties:
 
 * balance (number) - The wallet balance.
 * user (reference to User model) - - The user associated with the wallet.
+
+Transaction
+The Transaction model represents a transaction and has the following properties:
+* senderId (reference to User model | null)  - The user sending the money or null for Paystack.
+* userId (reference to User model) - The user associated with the transaction.
+* receiverId (reference to User model)  - The recipient of the transaction.
+* amount (number) - the amount that was transacted
+* reference (string) - transaction reference(trxRef).
+* transactionType (string) - 'Credit' | 'Debit'.

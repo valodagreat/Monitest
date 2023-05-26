@@ -9,7 +9,7 @@ class TransactionRepository {
     }
 
     async findByUserId(id: Types.ObjectId) : Promise<ITransactionData[]> {
-        return await TransactionModel.find({userId: id});
+        return await TransactionModel.find({userId: id}).populate({path: 'senderId userId receiverId', select: '-password'}).lean();
     }
 
     async findByReference(reference: string) : Promise<ITransactionData | null> {

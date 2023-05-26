@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 const transactionSchema = new mongoose.Schema({
     senderId: {
         type: mongoose.Schema.Types.ObjectId,
-        default: null
+        default: null,
+        ref: 'User',
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -12,7 +13,8 @@ const transactionSchema = new mongoose.Schema({
     },
     receiverId: {
         type: mongoose.Schema.Types.ObjectId,
-        default: null
+        default: null,
+        ref: 'User',
     },
     amount: {
         type: Number,

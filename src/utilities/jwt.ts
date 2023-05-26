@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 
 class JwtUtility {
     static generateToken(id: Types.ObjectId) {
-      return sign({ id }, process.env.JWT_SECRET as string, {
+      return sign({ _id: id }, process.env.JWT_SECRET as string, {
         expiresIn: process.env.JWT_EXPIREII,
       });
     }

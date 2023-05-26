@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength : 6,
     },
+    accountNumber: {
+        type: Number,
+        required: true,
+        unique: true
+    }
 }, {
     timestamps: true
 })

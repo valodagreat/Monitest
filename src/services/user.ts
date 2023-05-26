@@ -3,6 +3,9 @@ import ErrorMiddleware from "../middlewares/error";
 import { genSalt, hash, compare } from "bcryptjs";
 import JwtUtility from "../utilities/jwt";
 import UserRepository from "../repository/user";
+import WalletService from "../services/wallet";
+import { SHA256 } from 'crypto-js';
+import { Types } from "mongoose";
 
 class UserService implements IUserService {
     // userRepository: IUserRepository
@@ -11,20 +14,32 @@ class UserService implements IUserService {
     //     // console.log(_userRepository, "See")
     // }
 
-    async register(body: Omit<IUser, "_id">): Promise<IUserData> {
+    generateUniqueNumber(): number {
+        const randomNumber = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+        const data = `${Date.now()}${randomNumber}`;
+        const hashedData = SHA256(data).toString();
+        const uniqueNumberString = hashedData.substr(0, 10);
+        const uniqueNumber = parseInt(uniqueNumberString, 16);
+      
+        return uniqueNumber;
+    }
+
+    async register(body: Omit<IUser, "_id" | "accountNumber">): Promise<IUserData> {
         let user = await UserRepository.findByEmail(body.email);
         if (user) {
             ErrorMiddleware.errorHandler("user already exists", 400);
         }
         body.password = await this.hashPassword(body.password);
-        user =  await UserRepository.createUser(body);
-        // await WalletService.create({ user_id: user._id });
+        
+        user =  await UserRepository.createUser({...body, accountNumber: this.generateUniqueNumber()});
+        await WalletService.create({ user: user._id  });
         return { 
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
             _id: user._id, 
-            accessToken: JwtUtility.generateToken(user._id)
+            accessToken: JwtUtility.generateToken(user._id),
+            accountNumber: user.accountNumber
         };
     }
 
@@ -43,6 +58,22 @@ class UserService implements IUserService {
 
     async getOneByEmail(email: string): Promise<IUser | null> {
         const user = await UserRepository.findByEmail(email);
+        if (!user) {
+            ErrorMiddleware.errorHandler("user not found", 404);
+        }
+        return user;
+    }
+
+    async getOneByID(id: Types.ObjectId): Promise<IUser | null> {
+        const user = await UserRepository.findById(id);
+        if (!user) {
+            ErrorMiddleware.errorHandler("user not found", 404);
+        }
+        return user;
+    }
+
+    async getOneByAccountNumber(accountNumber: number): Promise<IUser | null> {
+        const user = await UserRepository.findByAccountNumber(accountNumber);
         if (!user) {
             ErrorMiddleware.errorHandler("user not found", 404);
         }
@@ -71,6 +102,7 @@ class UserService implements IUserService {
                 lastName: user.lastName,
                 email: user.email,
                 _id: user._id,
+                accountNumber: user.accountNumber
             };
         }
       }

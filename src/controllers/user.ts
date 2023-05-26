@@ -40,7 +40,6 @@ class UserController {
      async login(req: Request, res: Response): Promise<void> {
         try {
             const response = await userService.login(req.body);
-            console.log(response, "Ohh")
             res.status(200).send({ success: true, message: "login successful", data: response });
         } catch (err: any) {
             const status = err.status ? err.status : 400;

@@ -2,7 +2,7 @@ import { app } from "./app";
 // import colors from "colors";
 // import { configuration } from "./config/config";
 
-const port = 6000;
+const port = process.env.PORT;
 
 app.listen(port, () => {
   console.log(`Connected to port:${port}`);

@@ -55,7 +55,7 @@ The server exposes the following routes:
 * POST /api/fund - Fund a wallet via Paystack.
 * GET /api/verifyfunds - Verify payment initiated by Paystack and update wallet balance.
    
-##Models
+## Models
 User
 The User model represents a user and has the following properties:
 

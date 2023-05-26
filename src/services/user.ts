@@ -1,4 +1,4 @@
-import { IUser, IUserData, IUserRepository, IUserService } from "../interface";
+import { IUser, IUserData, IUserDataWHToken, IUserRepository, IUserService } from "../interface";
 import ErrorMiddleware from "../middlewares/error";
 import { genSalt, hash, compare } from "bcryptjs";
 import JwtUtility from "../utilities/jwt";
@@ -24,6 +24,27 @@ class UserService implements IUserService {
         return uniqueNumber;
     }
 
+    userResponseObject(user: IUser) {
+        return { 
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            _id: user._id, 
+            accessToken: JwtUtility.generateToken(user._id),
+            accountNumber: user.accountNumber
+        };
+    }
+
+    userResponseNoToken(user: IUser): IUserDataWHToken {
+        return {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            _id: user._id,
+            accountNumber: user.accountNumber
+        }
+    }
+
     async register(body: Omit<IUser, "_id" | "accountNumber">): Promise<IUserData> {
         let user = await UserRepository.findByEmail(body.email);
         if (user) {
@@ -33,14 +54,7 @@ class UserService implements IUserService {
         
         user =  await UserRepository.createUser({...body, accountNumber: this.generateUniqueNumber()});
         await WalletService.create({ user: user._id  });
-        return { 
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            _id: user._id, 
-            accessToken: JwtUtility.generateToken(user._id),
-            accountNumber: user.accountNumber
-        };
+        return this.userResponseObject(user)
     }
 
     removePassword(body: IUser) {
@@ -64,6 +78,13 @@ class UserService implements IUserService {
         return user;
     }
 
+    async getEmailWithoutPassword(email: string): Promise<IUserDataWHToken | undefined> {
+        const user = await this.getOneByEmail(email)
+        if(user){
+            return this.userResponseNoToken(user);
+        }
+    }
+
     async getOneByID(id: Types.ObjectId): Promise<IUser | null> {
         const user = await UserRepository.findById(id);
         if (!user) {
@@ -72,12 +93,20 @@ class UserService implements IUserService {
         return user;
     }
 
-    async getOneByAccountNumber(accountNumber: number): Promise<IUser | null> {
+    async getIdWithoutPassword(id: Types.ObjectId): Promise<IUserDataWHToken | undefined> {
+        const user = await this.getOneByID(id)
+        if(user){
+            return this.userResponseNoToken(user);
+        }
+    }
+
+    async getOneByAccountNumber(accountNumber: number): Promise<IUserDataWHToken | undefined> {
         const user = await UserRepository.findByAccountNumber(accountNumber);
         if (!user) {
             ErrorMiddleware.errorHandler("user not found", 404);
+        }else{
+            return this.userResponseNoToken(user)
         }
-        return user;
     }
 
     async isValidPassword( inputtedPassword: string, savedPassword: string, ): Promise<boolean> {
@@ -95,15 +124,7 @@ class UserService implements IUserService {
                   ErrorMiddleware.errorHandler("Invalid email or password", 400);
             }
             // const wallet = await WalletService.getOneByUser(user._id);
-            console.log(user)
-            return {
-                accessToken: JwtUtility.generateToken(user._id),
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                _id: user._id,
-                accountNumber: user.accountNumber
-            };
+            return this.userResponseObject(user)
         }
       }
 }

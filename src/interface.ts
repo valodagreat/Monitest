@@ -19,6 +19,11 @@ export type WalletTransfer = {
     amount: number;
 }
 
+export type WalletTransferEmail = {
+    email: string;
+    amount: number;
+}
+
 export interface IResponseData {
     status: number;
     message: string;
@@ -72,6 +77,14 @@ export interface IUserData {
     lastName: string;
     email: string;
     accessToken: string;
+    accountNumber: number;
+}
+
+export interface IUserDataWHToken {
+    _id: Types.ObjectId;
+    firstName: string;
+    lastName: string;
+    email: string;
     accountNumber: number;
 }
 

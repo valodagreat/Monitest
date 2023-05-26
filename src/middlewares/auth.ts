@@ -30,6 +30,22 @@ class AuthMiddleware {
     }
     next();
   }
+
+  checkEmailParams(req: CustomRequest, res: Response, next: NextFunction) {
+    const reference = req.query.email
+    if(!reference){
+      return res.status(400).send({ message: "No reference to validate transaction" });
+    }
+    next();
+  }
+
+  checkAccountNumberParams(req: CustomRequest, res: Response, next: NextFunction) {
+    const accountNumber = req.query.accountNumber
+    if(!accountNumber){
+      return res.status(400).send({ message: "Account number not passed" });
+    }
+    next();
+  }
 }
 
 export default new AuthMiddleware();

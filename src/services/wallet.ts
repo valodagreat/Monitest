@@ -1,4 +1,4 @@
-import { IWallet, IWalletTf, Data, IWalletDataSave, WalletTransfer } from "../interface";
+import { IWallet, IWalletTf, Data, IWalletDataSave, WalletTransfer, WalletTransferEmail } from "../interface";
 import WalletRepository from "../repository/wallet";
 import ErrorMiddleware from "../middlewares/error";
 import { Types, startSession } from 'mongoose';
@@ -72,6 +72,51 @@ class WalletService {
             ErrorMiddleware.errorHandler("You don't have a wallet", 404);
         }
         let recipientInfo = await UserRepository.findByAccountNumber(data.accountNumber);
+        if(userId === recipientInfo?._id){
+            ErrorMiddleware.errorHandler("Cannot send from the same account", 400)
+        }
+        if(!recipientInfo){
+            ErrorMiddleware.errorHandler("No user with such accountNumber", 404);
+        }else{
+            let recipientWallet = await WalletRepository.findByUserWithSave(recipientInfo._id)
+            if(!recipientWallet){
+                ErrorMiddleware.errorHandler("Receiver doesn't have a wallet", 404);
+            }
+            if(data.amount ===0){
+                ErrorMiddleware.errorHandler("Cannot transfer this amount", 400);
+            }
+            if(senderWallet && recipientWallet){
+                if (senderWallet.balance < data.amount) {
+                    ErrorMiddleware.errorHandler("Insufficient balance", 400);
+                }
+                senderWallet.balance -= data.amount;
+                recipientWallet.balance += data.amount;
+                
+                // Updating Sender and Recipient Wallet
+                await senderWallet.save({ session });
+                await recipientWallet.save({ session });
+
+                await session.commitTransaction();
+                session.endSession();
+
+                // Creating Transaction for Sender and Recipient
+                const trxRef = uuidv4();
+                await TransactionService.createWithoutRefCheck({userId, senderId: userId, receiverId: recipientInfo._id, amount: data.amount, reference: trxRef, transactionType: "Debit" })
+                await TransactionService.createWithoutRefCheck({userId: recipientInfo._id, senderId: userId, receiverId: recipientInfo._id, amount: data.amount, reference: trxRef, transactionType: "Credit" })
+    
+                return { message: "Transfer successful" }
+            }
+        }
+    }
+
+    async transferWithEmail(userId: Types.ObjectId, data: WalletTransferEmail): Promise<any> {
+        const session = await startSession();
+        session.startTransaction();
+        let senderWallet = await this.getMyWalletSave(userId)
+        if (!senderWallet) {
+            ErrorMiddleware.errorHandler("You don't have a wallet", 404);
+        }
+        let recipientInfo = await UserRepository.findByEmail(data.email);
         if(userId === recipientInfo?._id){
             ErrorMiddleware.errorHandler("Cannot send from the same account", 400)
         }

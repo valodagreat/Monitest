@@ -3,7 +3,7 @@ import Joi from "joi";
 class WalletValidator {
     static transfer() {
         return Joi.object({
-          accountNumber: Joi.number().min(10).max(10).required(),
+          accountNumber: Joi.number().min(10).required(),
           amount: Joi.number().min(1).required(),
         });
     }

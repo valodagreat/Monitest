@@ -1,10 +1,12 @@
 import { IWallet, IWalletTf, Data, IWalletDataSave, WalletTransfer } from "../interface";
 import WalletRepository from "../repository/wallet";
 import ErrorMiddleware from "../middlewares/error";
-import { Types } from 'mongoose';
+import { Types, startSession } from 'mongoose';
 import UserRepository from "../repository/user";
 import PaystackService from "./paystack"
 import UserService from "../services/user";
+import TransactionService from "../services/transaction";
+import { v4 as uuidv4 } from 'uuid';
 
 class WalletService {
     async create(body: Omit<IWallet, "_id" | "balance">): Promise<boolean> {
@@ -45,6 +47,10 @@ class WalletService {
     }
 
     async verifyPayment(reference: string): Promise<any> {
+        let transaction = await TransactionService.getTransactionsByRef(reference);
+        if(transaction){
+            ErrorMiddleware.errorHandler("Transaction already completed", 400);
+        }
         const payload = await PaystackService.validatePayment(reference);
         const getUser = await UserService.getOneByEmail(payload?.data.customer.email)
         if(getUser){
@@ -52,18 +58,23 @@ class WalletService {
             if(wallet){
                 wallet.balance+= payload?.data.amount/100
                 await wallet.save();
+                await TransactionService.create({userId: getUser?._id, receiverId: getUser?._id, amount: payload?.data.amount/100, reference, transactionType: "Credit" })
             }
         }
-        console.log(getUser, payload?.data.customer.email)
         return payload;
     }
 
     async transfer(userId: Types.ObjectId, data: WalletTransfer): Promise<any> {
-        let senderWallet = await this.getMyWalletSave(userId);
+        const session = await startSession();
+        session.startTransaction();
+        let senderWallet = await this.getMyWalletSave(userId)
         if (!senderWallet) {
             ErrorMiddleware.errorHandler("You don't have a wallet", 404);
         }
         let recipientInfo = await UserRepository.findByAccountNumber(data.accountNumber);
+        if(userId === recipientInfo?._id){
+            ErrorMiddleware.errorHandler("Cannot send from the same account", 400)
+        }
         if(!recipientInfo){
             ErrorMiddleware.errorHandler("No user with such accountNumber", 404);
         }else{
@@ -80,9 +91,18 @@ class WalletService {
                 }
                 senderWallet.balance -= data.amount;
                 recipientWallet.balance += data.amount;
-    
-                await senderWallet.save();
-                await recipientWallet.save();
+                
+                // Updating Sender and Recipient Wallet
+                await senderWallet.save({ session });
+                await recipientWallet.save({ session });
+
+                await session.commitTransaction();
+                session.endSession();
+
+                // Creating Transaction for Sender and Recipient
+                const trxRef = uuidv4();
+                await TransactionService.createWithoutRefCheck({userId, senderId: userId, receiverId: recipientInfo._id, amount: data.amount, reference: trxRef, transactionType: "Debit" })
+                await TransactionService.createWithoutRefCheck({userId: recipientInfo._id, senderId: userId, receiverId: recipientInfo._id, amount: data.amount, reference: trxRef, transactionType: "Credit" })
     
                 return { message: "Transfer successful" }
             }

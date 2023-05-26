@@ -3,20 +3,14 @@ import WalletValidator from "../validators/wallet";
 import RequestBodyMiddleware from "../middlewares/requestbody";
 import WalletController from "../controllers/wallet";
 import AuthMiddleware from "../middlewares/auth";
-// import UserServices from "../services/user";
-// import UserRepository from "../repository/user";
 
-// const userRepository = new UserRepository();
-// const userServices = new UserServices()
-const userController = new WalletController();
-// console.log(userRepository, userServices.login({"email": "vcaleb01@gamil.com",
-// "password": "tinoooo"}), userController)
 
+const walletController = new WalletController();
 const router = Router();
 
-router.route("/mywallet").get(AuthMiddleware.authorize, userController.getMyWallet);
-router.route("/transfer").post(RequestBodyMiddleware.validate(WalletValidator.transfer()), AuthMiddleware.authorize, userController.transfer);
-router.route("/fund").post(RequestBodyMiddleware.validate(WalletValidator.fund()), AuthMiddleware.authorize, userController.fund);
-router.route("/verifyfunds").get(AuthMiddleware.checkParams, userController.verifyPayment);
+router.route("/mywallet").get(AuthMiddleware.authorize, walletController.getMyWallet);
+router.route("/transfer").post(RequestBodyMiddleware.validate(WalletValidator.transfer()), AuthMiddleware.authorize, walletController.transfer);
+router.route("/fund").post(RequestBodyMiddleware.validate(WalletValidator.fund()), AuthMiddleware.authorize, walletController.fund);
+router.route("/verifyfunds").get(AuthMiddleware.checkParams, walletController.verifyPayment);
 
 export default router;

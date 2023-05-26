@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { SaveOptions, Types } from 'mongoose';
+import { ClientSession, ClientSessionOptions, SaveOptions, Types } from 'mongoose';
 
 export interface IUser {
     _id: Types.ObjectId;
@@ -23,6 +23,27 @@ export interface IResponseData {
     status: number;
     message: string;
     data: Data;
+}
+
+export interface ITransaction {
+    senderId?: Types.ObjectId;
+    userId: Types.ObjectId;
+    receiverId?: Types.ObjectId;
+    amount: number;
+    reference: string;
+    transactionType: string;
+}
+
+export interface ITransactionData {
+    _id: Types.ObjectId;
+    senderId?: Types.ObjectId;
+    userId: Types.ObjectId;
+    receiverId?: Types.ObjectId;
+    amount: number;
+    reference: string;
+    transactionType: string;
+    createdAt: NativeDate;
+    updatedAt: NativeDate;
 }
 export interface IData {
     _id: Types.ObjectId;
@@ -88,6 +109,16 @@ export interface IWalletDataSave {
     updatedAt: NativeDate;
     _id: Types.ObjectId;
     save(options?: SaveOptions): Promise<this>;
+}
+
+export interface IWalletDataSaveWithSession {
+    user: Types.ObjectId;
+    balance: number;
+    createdAt: NativeDate;
+    updatedAt: NativeDate;
+    _id: Types.ObjectId;
+    save(options?: SaveOptions): Promise<this>;
+    session?: any
 }
 
 export interface IWallet{

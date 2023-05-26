@@ -18,7 +18,8 @@
     /* Type Checking */
     "strict": true,                                      /* Enable all strict type-checking options. */
     // "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
+    "typeRoots": ["node_modules/@types", "src/typings"]
   },
-  "include": ["src", "env.d.ts", "index.d.ts"],
+  "include": ["src", "index.d.ts"],
   "exclude": ["node_modules"],
 }

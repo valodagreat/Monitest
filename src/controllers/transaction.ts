@@ -15,11 +15,11 @@ class TransactionController {
         try {
             if(req.user){
                 const transaction = await TransactionService.getMyTransactions(req.user._id);
-                res.status(200).send({ message: null, data: transaction });
+                res.status(200).send({ success: true, message: null, data: transaction });
             }
         } catch (err: any) {
             const status = err.status ? err.status : 400;
-            res.status(status).send({ message: err.message, data: null });
+            res.status(status).send({ success: false, message: err.message, data: null });
         }
      }
 }

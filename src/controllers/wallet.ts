@@ -16,7 +16,7 @@ class WalletController {
         try {
             if(req.user){
                 const wallet = await WalletService.getMyWallet(req.user._id);
-                res.status(200).send({ message: null, data: wallet });
+                res.status(200).send({ success: true, message: null, data: wallet });
             }
         } catch (err: any) {
             const status = err.status ? err.status : 400;
@@ -39,7 +39,7 @@ class WalletController {
             await WalletService.transfer(userId, req.body);
             res
                 .status(200)
-                .send({ message: "transfer is completed", data: null });
+                .send({ success: true, message: "transfer is completed", data: null });
           }
         } catch (err: any) {
           const status = err.status ? err.status : 400;
@@ -63,7 +63,7 @@ class WalletController {
           // res.redirect(data?.checkoutUrl);
           res
               .status(200)
-              .send({ message: "transfer is being processed", data });
+              .send({ success: true, message: "transfer is being processed", data });
         }
       } catch (err: any) {
         const status = err.status ? err.status : 400;
@@ -82,7 +82,7 @@ class WalletController {
      async verifyPayment(req: CustomRequest, res: Response): Promise<void> {
       try {
           const wallet = await  WalletService.verifyPayment(req.query.reference as string);
-          res.status(200).send({ message: "Verification complete", data: null });
+          res.status(200).send({ success: true, message: "Verification complete", data: null });
       } catch (err: any) {
           const status = err.status ? err.status : 400;
           res.status(status).send({ message: err.message, data: null });

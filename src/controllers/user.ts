@@ -22,7 +22,7 @@ class UserController {
           const user = await userService.register(req.body);
           res
             .status(201)
-            .send({ message: "user successfully created", data: user });
+            .send({ success: true, message: "user successfully created", data: user });
         } catch (err: any) {
           const status = err.status ? err.status : 400;
           res.status(status).send({ message: err.message, data: null });
@@ -41,7 +41,7 @@ class UserController {
         try {
             const response = await userService.login(req.body);
             console.log(response, "Ohh")
-            res.status(200).send({ message: "login successful", data: response });
+            res.status(200).send({ success: true, message: "login successful", data: response });
         } catch (err: any) {
             const status = err.status ? err.status : 400;
             res.status(status).send({ message: err.message, data: null });
@@ -61,7 +61,7 @@ class UserController {
           if(req.user){
             const userId = req.user._id;
             const response = await userService.getIdWithoutPassword(userId);
-            res.status(200).send({ message: "Fetch sucessfully", data: response });
+            res.status(200).send({ success: true, message: "Fetch sucessfully", data: response });
           }
         } catch (err: any) {
             const status = err.status ? err.status : 400;
@@ -81,7 +81,7 @@ class UserController {
         try {
             const userId = req.query.email;
             const response = await userService.getEmailWithoutPassword(userId as string);
-            res.status(200).send({ message: "Fetch sucessfully", data: response });
+            res.status(200).send({ success: true, message: "Fetch sucessfully", data: response });
         } catch (err: any) {
             const status = err.status ? err.status : 400;
             res.status(status).send({ message: err.message, data: null });
@@ -100,7 +100,7 @@ class UserController {
         try {
             const userId = req.query.accountNumber;
             const response = await userService.getOneByAccountNumber(parseInt(userId as string) as number);
-            res.status(200).send({ message: "Fetch sucessfully", data: response });
+            res.status(200).send({ success: true, message: "Fetch sucessfully", data: response });
         } catch (err: any) {
             const status = err.status ? err.status : 400;
             res.status(status).send({ message: err.message, data: null });

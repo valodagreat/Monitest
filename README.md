@@ -2,6 +2,11 @@
 
 This is an example project that demonstrates the usage of Express, TypeScript, and Mongoose to build a server application with three models: `User`, `Wallet`, and `Transaction`. The server allows transfers between wallets and funding via Paystack.
 
+## Running App
+The live version of the app can be found [here](https://moni-rough-front.vercel.app/)
+
+![Web APP](https://res.cloudinary.com/valodagreat/image/upload/v1685224576/Screen_Shot_2023-05-27_at_10.51.38_PM_g2orz3.png)
+
 ## Prerequisites
 
 Make sure you have the following installed on your system:

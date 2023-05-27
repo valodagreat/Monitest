@@ -8,6 +8,7 @@ import morgan from 'morgan';
 import connectDB from "./config/db";
 import router from "./routes";
 import ErrorMiddleware from "./middlewares/error";
+import xssclean from "xss-clean"
 
 // configure .env
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -32,6 +33,9 @@ app.use(mongoSanitize());
 
 //set security headers
 app.use(helmet());
+
+//Prevent XSS-CLEAN
+app.use(xssclean())
 
 app.use('/api', router);
 

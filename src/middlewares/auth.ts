@@ -34,7 +34,7 @@ class AuthMiddleware {
   checkEmailParams(req: CustomRequest, res: Response, next: NextFunction) {
     const reference = req.query.email
     if(!reference){
-      return res.status(400).send({ message: "No reference to validate transaction" });
+      return res.status(400).send({ message: "No email passed" });
     }
     next();
   }

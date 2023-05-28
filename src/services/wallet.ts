@@ -72,7 +72,7 @@ class WalletService {
             ErrorMiddleware.errorHandler("You don't have a wallet", 404);
         }
         let recipientInfo = await UserRepository.findByAccountNumber(data.accountNumber);
-        if(userId === recipientInfo?._id){
+        if(userId?.toString() === recipientInfo?._id.toString()){
             ErrorMiddleware.errorHandler("Cannot send from the same account", 400)
         }
         if(!recipientInfo){

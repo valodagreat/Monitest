@@ -71,7 +71,7 @@ class UserService implements IUserService {
     }
 
     async getOneByEmail(email: string): Promise<IUser | null> {
-        const user = await UserRepository.findByEmail(email);
+        const user = await UserRepository.findByEmail(email.toLowerCase());
         if (!user) {
             ErrorMiddleware.errorHandler("user not found", 404);
         }

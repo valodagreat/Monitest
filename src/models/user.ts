@@ -31,6 +31,15 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 })
 
+userSchema.pre('save', function (next) {
+    // Ensure that the email field exists and is a string
+    if (this.email && typeof this.email === 'string') {
+      // Convert the email to lowercase
+      this.email = this.email.toLowerCase();
+    }
+    next();
+});
+
 const User = mongoose.model('User',userSchema);
 
 export default User
